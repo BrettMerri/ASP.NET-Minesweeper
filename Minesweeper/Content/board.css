@@ -1,0 +1,8 @@
+﻿.cell {
+    float:left;
+    width:20px;
+    height:20px;
+}
+.cell:hover {
+    background-color:aqua;
+}
