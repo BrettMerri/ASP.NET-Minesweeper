@@ -20,9 +20,10 @@ function writeEntireBoard(data) {
 }
 
 function bindMouseButtons() {
-    $('.cell').on('contextmenu', function (e) { // right click
+    $('.cell').on('contextmenu', function (e) { // bind right click and prevent context menu from popping up
         e.preventDefault();
-        toggleFlag($(this).data('cell'));
+        if ($(this).hasClass('unselected') || $(this).hasClass('flag'))
+            $(this).toggleClass('unselected flag');
     }).click(function () {
         if ($(this).hasClass('unselected'))
             selectCell($(this).data('cell'));
@@ -55,16 +56,12 @@ function updateCellClasses(data) {
     });
 }
 
-function toggleFlag(id) {
-
-}
-
 function getClassName(cellValue) {
     switch (cellValue) {
         case 'Unselected':
             return 'unselected';
         case 'Flagged':
-            return 'flagged';
+            return 'flag';
         case 'Blank':
             return 'blank';
         case 'Mine':

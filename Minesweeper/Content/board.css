@@ -22,48 +22,54 @@
     background-color: #C0C0C0;
     float: left;
     position: relative;
-    width: 20px;
-    height: 20px;
-    border-top: 2px solid #FFFFFF;
-    border-left: 2px solid #FFFFFF;
-    border-bottom: 2px solid #808080;
-    border-right: 2px solid #808080;
+    width: 16px;
+    height: 16px;
+    background-image: url(../img/sprite.gif);
 }
-.cell.blank, .cell.selected, .cell.mine {
-    border: 1px solid #808080;
+.flag {
+    background-position: -16px -39px;
 }
-.cell.mine {
-    background-color:brown;
+.blank {
+    background-position: 0 -23px;
 }
 .one {
-    color: #1A00FC;
+    background-position: -16px -23px;
 }
 .two {
-    color: #238013;
+    background-position: -32px -23px;
 }
 .three {
-    color: #C0C0C0;
+    background-position: -48px -23px;
 }
 .four {
-    color: #C0C0C0;
+    background-position: -64px -23px;
 }
 .five {
-    color: #7B0000;
+    background-position: -80px -23px;
 }
 .six {
-    color: #268081;
+    background-position: -96px -23px;
 }
 .seven {
-    color: #000000;
+    background-position: -112px -23px;
 }
 .eight {
-    color: #808080;
+    background-position: -128px -23px;
 }
-.cell.unselected:hover {
-    border-top: 1px solid #808080;
-    border-left: 1px solid #808080;
-    border-bottom: 1px solid #FFFFFF;
-    border-right: 1px solid #FFFFFF;
+.unselected {
+    background-position: 0 -39px;
+}
+.mineflagged {
+    background-position: -16px -39px;
+}
+.minedeath {
+    background-position: -32px -39px;
+}
+.minemisflagged {
+    background-position: -48px -39px;
+}
+.mine {
+    background-position: -64px -39px;
 }
 .cell-row {
     clear: both;
