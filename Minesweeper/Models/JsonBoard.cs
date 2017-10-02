@@ -9,9 +9,9 @@ namespace Minesweeper.Models
     {
         int width;
         int height;
-        string[] values;
+        JsonCellValue[] values;
 
-        public JsonBoard(int width, int height, string[] boardValues)
+        public JsonBoard(int width, int height, JsonCellValue[] boardValues)
         {
             Width = width;
             Height = height;
@@ -20,6 +20,6 @@ namespace Minesweeper.Models
 
         public int Width { get => width; set => width = value; }
         public int Height { get => height; set => height = value; }
-        public string[] Values { get => values; set => values = value; }
+        public JsonCellValue[] Values { get => values; set => values = value; }
     }
 }

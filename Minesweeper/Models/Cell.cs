@@ -7,6 +7,7 @@ namespace Minesweeper.Models
 {
     public class Cell
     {
+        int id;
         int surroundingMinesValue;
         bool isMine;
         bool isSelected;
@@ -14,8 +15,9 @@ namespace Minesweeper.Models
         bool isMineBlacklisted; //used to check if a mine can be generated at this cell
         bool surroundingMinesChecked; //used to check if surrounding cells have already been checked when revealing all connecting zeros
 
-        public Cell()
+        public Cell(int id)
         {
+            Id = id;
             SurroundingMinesValue = 0;
             isMine = false;
             isSelected = false;
@@ -30,5 +32,6 @@ namespace Minesweeper.Models
         public bool IsMineBlacklisted { get => isMineBlacklisted; set => isMineBlacklisted = value; }
         public bool SurroundingMinesChecked { get => surroundingMinesChecked; set => surroundingMinesChecked = value; }
         public int SurroundingMinesValue { get => surroundingMinesValue; set => surroundingMinesValue = value; }
+        public int Id { get => id; set => id = value; }
     }
 }

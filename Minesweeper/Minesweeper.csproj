@@ -148,7 +148,9 @@
     </Compile>
     <Compile Include="Models\Board.cs" />
     <Compile Include="Models\Cell.cs" />
+    <Compile Include="Models\CellValue.cs" />
     <Compile Include="Models\JsonBoard.cs" />
+    <Compile Include="Models\JsonCellValue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

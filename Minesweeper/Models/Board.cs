@@ -26,7 +26,7 @@ namespace Minesweeper.Models
 
         public JsonBoard GetJsonBoard()
         {
-            List<string> boardStringList = new List<string>();
+            List<JsonCellValue> JsonCellValueList = new List<JsonCellValue>();
 
             //Goes through y values top to bottom
             for (int y = 0; y < Vertical; y++)
@@ -37,16 +37,18 @@ namespace Minesweeper.Models
                     Cell currentCell = CellArray[y, x];
 
                     if (currentCell.IsFlagged)
-                        boardStringList.Add("F");
+                        JsonCellValueList.Add(new JsonCellValue("Flagged", currentCell.Id));
                     else if (!currentCell.IsSelected)
-                        boardStringList.Add("U");
+                        JsonCellValueList.Add(new JsonCellValue("Unselected", currentCell.Id));
                     else if (currentCell.IsMine)
-                        boardStringList.Add("M");
+                        JsonCellValueList.Add(new JsonCellValue("Mine", currentCell.Id));
+                    else if (currentCell.SurroundingMinesValue == 0)
+                        JsonCellValueList.Add(new JsonCellValue("Blank", currentCell.Id));
                     else
-                        boardStringList.Add(currentCell.SurroundingMinesValue.ToString());
+                        JsonCellValueList.Add(new JsonCellValue(currentCell.SurroundingMinesValue, currentCell.Id));
                 }
             }
-            return new JsonBoard(Horizontal, Vertical, boardStringList.ToArray());
+            return new JsonBoard(Horizontal, Vertical, JsonCellValueList.ToArray());
         }
 
         protected void CreateEmptyCellArray()
@@ -59,7 +61,8 @@ namespace Minesweeper.Models
                 //Goes through x values left to right
                 for (int x = 0; x < Horizontal; x++)
                 {
-                    CellArray[y, x] = new Cell();
+                    int id = y * Horizontal + x;
+                    CellArray[y, x] = new Cell(id);
                 }
             }
         }

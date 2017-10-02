@@ -23,6 +23,13 @@ namespace Minesweeper.Controllers
             return Json(currentJsonBoard, JsonRequestBehavior.AllowGet);
         }
 
+        /*[HttpGet]
+        public JsonResult SelectCell(int id)
+        {
+            Board currentBoard = Board.Current;
+            JsonBoard currentJsonBoard = currentBoard
+        }*/
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
