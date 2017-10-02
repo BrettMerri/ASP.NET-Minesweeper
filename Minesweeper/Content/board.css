@@ -1,4 +1,7 @@
-﻿#board-container {
+﻿body {
+    background-color: #EEEEEE;
+}
+#board-container {
     background-color: #C0C0C0;
     border-top: 3px solid #FFFFFF;
     border-left: 3px solid #FFFFFF;
@@ -26,12 +29,42 @@
     border-bottom: 2px solid #808080;
     border-right: 2px solid #808080;
 }
-    .cell:hover {
-        border-top: 2px solid #808080;
-        border-left: 2px solid #808080;
-        border-bottom: 2px solid #FFFFFF;
-        border-right: 2px solid #FFFFFF;
-    }
+.cell.blank, .cell.selected, .cell.mine {
+    border: 1px solid #808080;
+}
+.cell.mine {
+    background-color:brown;
+}
+.one {
+    color: #1A00FC;
+}
+.two {
+    color: #238013;
+}
+.three {
+    color: #C0C0C0;
+}
+.four {
+    color: #C0C0C0;
+}
+.five {
+    color: #7B0000;
+}
+.six {
+    color: #268081;
+}
+.seven {
+    color: #000000;
+}
+.eight {
+    color: #808080;
+}
+.cell.unselected:hover {
+    border-top: 1px solid #808080;
+    border-left: 1px solid #808080;
+    border-bottom: 1px solid #FFFFFF;
+    border-right: 1px solid #FFFFFF;
+}
 .cell-row {
     clear: both;
 }

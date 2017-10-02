@@ -2,6 +2,7 @@
     $.get('/Home/GetBoard', function (data) {
         console.log(data);
         writeEntireBoard(data);
+        bindMouseButtons();
     });
 });
 
@@ -18,6 +19,46 @@ function writeEntireBoard(data) {
     }
 }
 
+function bindMouseButtons() {
+    $('.cell').on('contextmenu', function (e) { // right click
+        e.preventDefault();
+        toggleFlag($(this).data('cell'));
+    }).click(function () {
+        if ($(this).hasClass('unselected'))
+            selectCell($(this).data('cell'));
+    });
+}
+
+function selectCell(id) {
+    $.get('/Home/SelectCell?id=' + id, function (data) {
+        console.log(data);
+        updateCellClasses(data);
+        if (data[0].Value === "Mine")
+            mineSelected();
+    });
+}
+
+function mineSelected() {
+    $('.cell').off();
+    $('#board-container').click(function () {
+        $(this).off();
+        $('.cell').attr('class', 'cell unselected');
+        bindMouseButtons();
+    });
+}
+
+function updateCellClasses(data) {
+    $.each(data, function () {
+        var id = this.Id;
+        var className = getClassName(this.Value);
+        $('div.cell[data-cell="' + id + '"]').attr('class', 'cell ' + className);
+    });
+}
+
+function toggleFlag(id) {
+
+}
+
 function getClassName(cellValue) {
     switch (cellValue) {
         case 'Unselected':
@@ -26,6 +67,8 @@ function getClassName(cellValue) {
             return 'flagged';
         case 'Blank':
             return 'blank';
+        case 'Mine':
+            return 'mine';
         case '1':
             return 'selected one';
         case '2':

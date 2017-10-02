@@ -10,6 +10,11 @@ namespace Minesweeper.Models
         string value;
         int id;
 
+        public JsonCellValue()
+        {
+            Value = "";
+            Id = -1;
+        }
         public JsonCellValue(string value, int id)
         {
             Value = value;

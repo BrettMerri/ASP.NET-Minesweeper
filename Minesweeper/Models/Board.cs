@@ -16,7 +16,7 @@ namespace Minesweeper.Models
 
         public Board()
         {
-            Horizontal = 9;
+            Horizontal = 9; 
             Vertical = 9;
             Mines = 10;
             BlankCellsRemaining = Horizontal * Vertical - Mines;
@@ -81,12 +81,192 @@ namespace Minesweeper.Models
             }
         }
 
-        public enum GameState
+        public JsonCellValue[] SelectCell(int id)
         {
-            BlankGameBoard,
-            GameInProgress,
-            MineSelected,
-            GameWon
+            int y = id / Horizontal;
+            int x = id % Horizontal;
+
+            Cell selectedCell = CellArray[y, x];
+
+            if (selectedCell.IsSelected || selectedCell.IsFlagged)
+                return Array.Empty<JsonCellValue>();
+
+            selectedCell.IsSelected = true;
+
+            //If this is the user's first selection, generate mines and then set gamestate to GameInProgress
+            if (State == GameState.BlankGameBoard)
+            {
+                GenerateMines(y, x);
+                State = GameState.GameInProgress;
+            }
+
+            //If the selected cell has zero mines surrounding
+            if (selectedCell.SurroundingMinesValue == 0)
+            {
+                List<JsonCellValue> JsonCellValueList = new List<JsonCellValue>();
+                JsonCellValueList.Add(new JsonCellValue("Blank", id));
+                RevealAroundConnectingZeros(y, x, JsonCellValueList);
+                return JsonCellValueList.ToArray();
+            }
+
+            if (selectedCell.IsMine)
+            {
+                State = GameState.MineSelected;
+                return new JsonCellValue[] { new JsonCellValue("Mine", id) };
+            }
+            else
+                return new JsonCellValue[] { new JsonCellValue(selectedCell.SurroundingMinesValue, id) };
+        }
+
+        public void FlagCell(int y, int x)
+        {
+            Cell flaggedCell = CellArray[y, x];
+            if (flaggedCell.IsSelected)
+            {
+                return;
+            }
+
+            //Toggles the IsFlagged boolean value between true and false
+            flaggedCell.IsFlagged = !flaggedCell.IsFlagged;
+        }
+
+        private void RevealAroundConnectingZeros(int yInput, int xInput, List<JsonCellValue> list)
+        {
+            //This is set to true to indicate that this cell's surroundings have been checked already.
+            CellArray[yInput, xInput].SurroundingMinesChecked = true;
+
+            //Starts one y value above and works its way down
+            for (int y = yInput - 1; y <= yInput + 1; y++)
+            {
+                //Checks y value's bounds
+                if (y < 0 || y >= Vertical)
+                {
+                    continue;
+                }
+
+                //Starts one x value left and works its way right
+                for (int x = xInput - 1; x <= xInput + 1; x++)
+                {
+                    //Checks x value's bounds
+                    if (x < 0 || x >= Horizontal)
+                    {
+                        continue;
+                    }
+
+                    int id = y * Horizontal + x;
+
+                    if (!CellArray[y, x].IsSelected)
+                    {
+                        CellArray[y, x].IsSelected = true;
+                        if (CellArray[y, x].SurroundingMinesValue == 0)
+                            list.Add(new JsonCellValue("Blank", id));
+                        else
+                            list.Add(new JsonCellValue(CellArray[y, x].SurroundingMinesValue, id));
+                    }
+
+                    //If a revealed cell is a zero, and it has not been checked already...
+                    if (CellArray[y, x].SurroundingMinesValue == 0 &&
+                        !CellArray[y, x].SurroundingMinesChecked)
+                    {
+                        //Use recursion to reveal around the newly revealed zeros
+                        RevealAroundConnectingZeros(y, x, list);
+                    }
+                }
+            }
+        }
+
+        private void GenerateMines(int y, int x)
+        {
+            BlacklistSurroundingCells(y, x);
+
+            Random rnd = new Random();
+
+            for (int i = 0; i < Mines; i++)
+            {
+                int yRndValue = rnd.Next(Vertical);
+                int xRndValue = rnd.Next(Horizontal);
+
+                Cell randomCell = CellArray[yRndValue, xRndValue];
+
+                if (randomCell.IsMineBlacklisted ||
+                    randomCell.IsMine ||
+                    randomCell.IsSelected)
+                {
+                    i--; //This restarts the for loop with the same i value
+                }
+                else
+                {
+                    randomCell.IsMine = true;
+                }
+            }
+
+            GenerateSurroundingMinesValues();
+        }
+
+        private void BlacklistSurroundingCells(int yInput, int xInput)
+        {
+            //Starts one y value above and works its way down
+            for (int y = yInput - 1; y <= yInput + 1; y++)
+            {
+                //Checks y value's bounds
+                if (y < 0 || y >= Vertical)
+                {
+                    continue;
+                }
+
+                //Starts one x value left and works its way right
+                for (int x = xInput - 1; x <= xInput + 1; x++)
+                {
+                    //Checks x value's bounds
+                    if (x < 0 || x >= Horizontal)
+                    {
+                        continue;
+                    }
+
+                    CellArray[y, x].IsMineBlacklisted = true;
+                }
+            }
+        }
+
+        private void GenerateSurroundingMinesValues()
+        {
+            //Goes through y values top to bottom
+            for (int y = 0; y < Vertical; y++)
+            {
+                //Goes through x values left to right
+                for (int x = 0; x < Horizontal; x++)
+                {
+                    CellArray[y, x].SurroundingMinesValue = CountSurroundingMines(y, x);
+                }
+            }
+        }
+
+        private int CountSurroundingMines(int yInput, int xInput)
+        {
+            int surroundingMinesValue = 0;
+            //Starts one y value above and works its way down
+            for (int y = yInput - 1; y <= yInput + 1; y++)
+            {
+                //Checks y value's bounds
+                if (y < 0 || y >= Vertical)
+                {
+                    continue;
+                }
+
+                //Starts one x value left and works its way right
+                for (int x = xInput - 1; x <= xInput + 1; x++)
+                {
+                    //Checks x value's bounds and checks if a mine exists
+                    if (x < 0 || x >= Horizontal ||
+                        !CellArray[y, x].IsMine)
+                    {
+                        continue;
+                    }
+
+                    surroundingMinesValue++;
+                }
+            }
+            return surroundingMinesValue;
         }
 
         public Cell[,] CellArray { get => cellArray; set => cellArray = value; }

@@ -23,12 +23,15 @@ namespace Minesweeper.Controllers
             return Json(currentJsonBoard, JsonRequestBehavior.AllowGet);
         }
 
-        /*[HttpGet]
+        [HttpGet]
         public JsonResult SelectCell(int id)
         {
             Board currentBoard = Board.Current;
-            JsonBoard currentJsonBoard = currentBoard
-        }*/
+            JsonCellValue[] JsonCellValueArray = currentBoard.SelectCell(id);
+            if (currentBoard.State == GameState.MineSelected)
+                HttpContext.Session.Abandon();
+            return Json(JsonCellValueArray, JsonRequestBehavior.AllowGet);
+        }
 
         public ActionResult About()
         {

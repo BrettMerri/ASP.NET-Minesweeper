@@ -5,12 +5,11 @@ using System.Web;
 
 namespace Minesweeper.Models
 {
-    public enum CellValue
+    public enum GameState
     {
-        Unselected,
-        Flagged,
-        Mine,
-        Empty,
-        Number
+        BlankGameBoard,
+        GameInProgress,
+        MineSelected,
+        GameWon
     }
 }
