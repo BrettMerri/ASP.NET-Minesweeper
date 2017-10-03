@@ -34,7 +34,7 @@ function selectCell(id) {
     $.get('/Home/SelectCell?id=' + id, function (data) {
         console.log(data);
         updateCellClasses(data);
-        if (data[0].Value === "Mine")
+        if (data[0].Value === "MineDeath")
             mineSelected();
     });
 }
@@ -66,6 +66,8 @@ function getClassName(cellValue) {
             return 'blank';
         case 'Mine':
             return 'mine';
+        case 'MineDeath':
+            return 'minedeath';
         case '1':
             return 'selected one';
         case '2':

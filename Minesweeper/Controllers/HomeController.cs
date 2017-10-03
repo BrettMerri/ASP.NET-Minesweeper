@@ -32,12 +32,5 @@ namespace Minesweeper.Controllers
                 HttpContext.Session.Abandon();
             return Json(JsonCellValueArray, JsonRequestBehavior.AllowGet);
         }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
     }
 }

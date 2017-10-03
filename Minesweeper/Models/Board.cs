@@ -51,36 +51,6 @@ namespace Minesweeper.Models
             return new JsonBoard(Horizontal, Vertical, JsonCellValueList.ToArray());
         }
 
-        protected void CreateEmptyCellArray()
-        {
-            CellArray = new Cell[Vertical, Horizontal];
-
-            //Goes through y values top to bottom
-            for (int y = 0; y < Vertical; y++)
-            {
-                //Goes through x values left to right
-                for (int x = 0; x < Horizontal; x++)
-                {
-                    int id = y * Horizontal + x;
-                    CellArray[y, x] = new Cell(id);
-                }
-            }
-        }
-
-        public static Board Current
-        {
-            get
-            {
-                var boardSession = HttpContext.Current.Session["Board"] as Board;
-                if (boardSession == null)
-                {
-                    boardSession = new Board();
-                    HttpContext.Current.Session["Board"] = boardSession;
-                }
-                return boardSession;
-            }
-        }
-
         public JsonCellValue[] SelectCell(int id)
         {
             int y = id / Horizontal;
@@ -100,6 +70,11 @@ namespace Minesweeper.Models
                 State = GameState.GameInProgress;
             }
 
+            if (selectedCell.IsMine)
+            {
+                return MineSelected(id);
+            }
+
             //If the selected cell has zero mines surrounding
             if (selectedCell.SurroundingMinesValue == 0)
             {
@@ -109,25 +84,49 @@ namespace Minesweeper.Models
                 return JsonCellValueList.ToArray();
             }
 
-            if (selectedCell.IsMine)
-            {
-                State = GameState.MineSelected;
-                return new JsonCellValue[] { new JsonCellValue("Mine", id) };
-            }
-            else
-                return new JsonCellValue[] { new JsonCellValue(selectedCell.SurroundingMinesValue, id) };
+            return new JsonCellValue[] { new JsonCellValue(selectedCell.SurroundingMinesValue, id) };
         }
 
-        public void FlagCell(int y, int x)
+        protected void CreateEmptyCellArray()
         {
-            Cell flaggedCell = CellArray[y, x];
-            if (flaggedCell.IsSelected)
-            {
-                return;
-            }
+            CellArray = new Cell[Vertical, Horizontal];
 
-            //Toggles the IsFlagged boolean value between true and false
-            flaggedCell.IsFlagged = !flaggedCell.IsFlagged;
+            //Goes through y values top to bottom
+            for (int y = 0; y < Vertical; y++)
+            {
+                //Goes through x values left to right
+                for (int x = 0; x < Horizontal; x++)
+                {
+                    int id = y * Horizontal + x;
+                    CellArray[y, x] = new Cell(id);
+                }
+            }
+        }
+
+        private JsonCellValue[] MineSelected(int selectedCellId)
+        {
+            State = GameState.MineSelected;
+            JsonCellValue[] JsonCellValueArray = new JsonCellValue[Vertical * Horizontal];
+            for (int y = 0; y < Vertical; y++)
+            {
+                //Goes through x values left to right
+                for (int x = 0; x < Horizontal; x++)
+                {
+                    int id = y * Horizontal + x;
+                    if (CellArray[y, x].IsMine)
+                    {
+                        if (id == selectedCellId)
+                            JsonCellValueArray[id] = new JsonCellValue("MineDeath", id);
+                        else
+                            JsonCellValueArray[id] = new JsonCellValue("Mine", id);
+                    }
+                    else if (CellArray[y, x].SurroundingMinesValue == 0)
+                        JsonCellValueArray[id] = new JsonCellValue("Blank", id);
+                    else
+                        JsonCellValueArray[id] = new JsonCellValue(CellArray[y, x].SurroundingMinesValue, id);
+                }
+            }
+            return JsonCellValueArray;
         }
 
         private void RevealAroundConnectingZeros(int yInput, int xInput, List<JsonCellValue> list)
@@ -267,6 +266,20 @@ namespace Minesweeper.Models
                 }
             }
             return surroundingMinesValue;
+        }
+
+        public static Board Current
+        {
+            get
+            {
+                var boardSession = HttpContext.Current.Session["Board"] as Board;
+                if (boardSession == null)
+                {
+                    boardSession = new Board();
+                    HttpContext.Current.Session["Board"] = boardSession;
+                }
+                return boardSession;
+            }
         }
 
         public Cell[,] CellArray { get => cellArray; set => cellArray = value; }
