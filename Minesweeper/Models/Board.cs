@@ -24,7 +24,7 @@ namespace Minesweeper.Models
             CreateEmptyCellArray();
         }
 
-        public JsonBoard GetJsonBoard()
+        public InitialJsonValue GetJsonBoard()
         {
             List<JsonCellValue> JsonCellValueList = new List<JsonCellValue>();
 
@@ -48,10 +48,10 @@ namespace Minesweeper.Models
                         JsonCellValueList.Add(new JsonCellValue(currentCell.SurroundingMinesValue, currentCell.Id));
                 }
             }
-            return new JsonBoard(Horizontal, Vertical, JsonCellValueList.ToArray());
+            return new InitialJsonValue(Horizontal, Vertical, JsonCellValueList.ToArray());
         }
 
-        public JsonCellValue[] SelectCell(int id)
+        public JsonValue SelectCell(int id)
         {
             int y = id / Horizontal;
             int x = id % Horizontal;
@@ -59,7 +59,7 @@ namespace Minesweeper.Models
             Cell selectedCell = CellArray[y, x];
 
             if (selectedCell.IsSelected || selectedCell.IsFlagged)
-                return Array.Empty<JsonCellValue>();
+                return new JsonValue();
 
             selectedCell.IsSelected = true;
 
@@ -81,10 +81,10 @@ namespace Minesweeper.Models
                 List<JsonCellValue> JsonCellValueList = new List<JsonCellValue>();
                 JsonCellValueList.Add(new JsonCellValue("Blank", id));
                 RevealAroundConnectingZeros(y, x, JsonCellValueList);
-                return JsonCellValueList.ToArray();
+                return new JsonValue(JsonCellValueList.ToArray(), State);
             }
 
-            return new JsonCellValue[] { new JsonCellValue(selectedCell.SurroundingMinesValue, id) };
+            return new JsonValue(new JsonCellValue[] { new JsonCellValue(selectedCell.SurroundingMinesValue, id) }, State);
         }
 
         protected void CreateEmptyCellArray()
@@ -120,7 +120,7 @@ namespace Minesweeper.Models
             return true;
         }
 
-        private JsonCellValue[] MineSelected(int selectedCellId)
+        private JsonValue MineSelected(int selectedCellId)
         {
             State = GameState.MineSelected;
             JsonCellValue[] JsonCellValueArray = new JsonCellValue[Vertical * Horizontal];
@@ -147,7 +147,7 @@ namespace Minesweeper.Models
                         JsonCellValueArray[id] = new JsonCellValue(CellArray[y, x].SurroundingMinesValue, id);
                 }
             }
-            return JsonCellValueArray;
+            return new JsonValue(JsonCellValueArray, State);
         }
 
         private void RevealAroundConnectingZeros(int yInput, int xInput, List<JsonCellValue> list)

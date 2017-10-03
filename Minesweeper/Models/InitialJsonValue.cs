@@ -5,13 +5,13 @@ using System.Web;
 
 namespace Minesweeper.Models
 {
-    public class JsonBoard
+    public class InitialJsonValue
     {
         int width;
         int height;
         JsonCellValue[] values;
 
-        public JsonBoard(int width, int height, JsonCellValue[] boardValues)
+        public InitialJsonValue(int width, int height, JsonCellValue[] boardValues)
         {
             Width = width;
             Height = height;

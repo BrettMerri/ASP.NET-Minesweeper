@@ -19,7 +19,7 @@ namespace Minesweeper.Controllers
         public JsonResult GetBoard()
         {
             Board currentBoard = Board.Current;
-            JsonBoard currentJsonBoard = currentBoard.GetJsonBoard();
+            InitialJsonValue currentJsonBoard = currentBoard.GetJsonBoard();
             return Json(currentJsonBoard, JsonRequestBehavior.AllowGet);
         }
 
@@ -27,10 +27,10 @@ namespace Minesweeper.Controllers
         public JsonResult SelectCell(int id)
         {
             Board currentBoard = Board.Current;
-            JsonCellValue[] JsonCellValueArray = currentBoard.SelectCell(id);
+            JsonValue currentJsonValue = currentBoard.SelectCell(id);
             if (currentBoard.State == GameState.MineSelected)
                 HttpContext.Session.Abandon();
-            return Json(JsonCellValueArray, JsonRequestBehavior.AllowGet);
+            return Json(currentJsonValue, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

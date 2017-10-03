@@ -32,8 +32,8 @@ function bindMouseButtons() {
 function selectCell(id) {
     $.get('/Home/SelectCell?id=' + id, function (data) {
         console.log(data);
-        updateCellClasses(data);
-        if (data.length > id && data[id].Value === "MineDeath")
+        updateCellClasses(data.Values);
+        if (data.State === 'MineSelected')
             mineSelected();
     });
 }

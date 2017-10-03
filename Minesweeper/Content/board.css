@@ -11,6 +11,9 @@
     margin-top: 10px;
     display: inline-block;
 }
+#board-header {
+    height:25px;
+}
 #board {
     display: inline-block;
     border-top: 3px solid #808080;
