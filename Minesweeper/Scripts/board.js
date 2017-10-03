@@ -22,8 +22,7 @@ function writeEntireBoard(data) {
 function bindMouseButtons() {
     $('.cell').on('contextmenu', function (e) { // bind right click and prevent context menu from popping up
         e.preventDefault();
-        if ($(this).hasClass('unselected') || $(this).hasClass('flag'))
-            $(this).toggleClass('unselected flag');
+        flagCell($(this));
     }).click(function () {
         if ($(this).hasClass('unselected'))
             selectCell($(this).data('cell'));
@@ -34,7 +33,7 @@ function selectCell(id) {
     $.get('/Home/SelectCell?id=' + id, function (data) {
         console.log(data);
         updateCellClasses(data);
-        if (data[0].Value === "MineDeath")
+        if (data.length > id && data[id].Value === "MineDeath")
             mineSelected();
     });
 }
@@ -48,11 +47,21 @@ function mineSelected() {
     });
 }
 
+function flagCell($this) {
+    if ($this.hasClass('unselected') || $this.hasClass('flag')) {
+        $this.toggleClass('unselected flag');
+        $.get('/Home/FlagCell?id=' + $this.data('cell'), function (data) {
+            console.log(data);
+        });
+    }
+}
+
 function updateCellClasses(data) {
     $.each(data, function () {
         var id = this.Id;
         var className = getClassName(this.Value);
-        $('div.cell[data-cell="' + id + '"]').attr('class', 'cell ' + className);
+        var $cell = $('div.cell[data-cell="' + id + '"]');
+        $cell.attr('class', 'cell ' + className);
     });
 }
 
@@ -60,8 +69,12 @@ function getClassName(cellValue) {
     switch (cellValue) {
         case 'Unselected':
             return 'unselected';
-        case 'Flagged':
+        case 'Flag':
             return 'flag';
+        case 'MineFlagged':
+            return 'mineflagged';
+        case 'MineMisFlagged':
+            return 'minemisflagged';
         case 'Blank':
             return 'blank';
         case 'Mine':

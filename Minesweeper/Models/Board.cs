@@ -37,7 +37,7 @@ namespace Minesweeper.Models
                     Cell currentCell = CellArray[y, x];
 
                     if (currentCell.IsFlagged)
-                        JsonCellValueList.Add(new JsonCellValue("Flagged", currentCell.Id));
+                        JsonCellValueList.Add(new JsonCellValue("Flag", currentCell.Id));
                     else if (!currentCell.IsSelected)
                         JsonCellValueList.Add(new JsonCellValue("Unselected", currentCell.Id));
                     else if (currentCell.IsMine)
@@ -103,6 +103,23 @@ namespace Minesweeper.Models
             }
         }
 
+        public bool FlagCell(int id)
+        {
+            int y = id / Horizontal;
+            int x = id % Horizontal;
+
+            Cell flaggedCell = CellArray[y, x];
+
+            if (flaggedCell.IsSelected)
+            {
+                return false;
+            }
+
+            //Toggles the IsFlagged boolean value between true and false
+            flaggedCell.IsFlagged = !flaggedCell.IsFlagged;
+            return true;
+        }
+
         private JsonCellValue[] MineSelected(int selectedCellId)
         {
             State = GameState.MineSelected;
@@ -117,9 +134,13 @@ namespace Minesweeper.Models
                     {
                         if (id == selectedCellId)
                             JsonCellValueArray[id] = new JsonCellValue("MineDeath", id);
+                        else if (CellArray[y, x].IsFlagged)
+                            JsonCellValueArray[id] = new JsonCellValue("MineFlagged", id);
                         else
                             JsonCellValueArray[id] = new JsonCellValue("Mine", id);
                     }
+                    else if (CellArray[y, x].IsFlagged)
+                        JsonCellValueArray[id] = new JsonCellValue("MineMisFlagged", id);
                     else if (CellArray[y, x].SurroundingMinesValue == 0)
                         JsonCellValueArray[id] = new JsonCellValue("Blank", id);
                     else

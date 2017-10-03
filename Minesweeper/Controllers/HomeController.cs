@@ -32,5 +32,13 @@ namespace Minesweeper.Controllers
                 HttpContext.Session.Abandon();
             return Json(JsonCellValueArray, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public JsonResult FlagCell(int id)
+        {
+            Board currentBoard = Board.Current;
+            bool success = currentBoard.FlagCell(id);
+            return Json(success, JsonRequestBehavior.AllowGet);
+        }
     }
 }
