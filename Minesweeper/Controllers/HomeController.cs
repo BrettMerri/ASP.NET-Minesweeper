@@ -28,7 +28,8 @@ namespace Minesweeper.Controllers
         {
             Board currentBoard = Board.Current;
             JsonValue currentJsonValue = currentBoard.SelectCell(id);
-            if (currentBoard.State == GameState.MineSelected)
+            if (currentBoard.State == GameState.MineSelected ||
+                currentBoard.State == GameState.GameWon)
                 HttpContext.Session.Abandon();
             return Json(currentJsonValue, JsonRequestBehavior.AllowGet);
         }

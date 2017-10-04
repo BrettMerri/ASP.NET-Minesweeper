@@ -1,10 +1,17 @@
 ﻿$(document).ready(function () {
+    preventContextMenu();
     $.get('/Home/GetBoard', function (data) {
         console.log(data);
         writeEntireBoard(data);
         bindMouseButtons();
     });
 });
+
+function preventContextMenu() {
+    $('#board-container').on('contextmenu', function (e) { //Prevent context menu from popping up on right click
+        e.preventDefault();
+    });
+}
 
 function writeEntireBoard(data) {
     var appendString = '<div class="cell-row">';
@@ -20,30 +27,38 @@ function writeEntireBoard(data) {
 }
 
 function bindMouseButtons() {
-    $('.cell').on('contextmenu', function (e) { // bind right click and prevent context menu from popping up
-        e.preventDefault();
-        flagCell($(this));
-    }).click(function () {
-        if ($(this).hasClass('unselected'))
-            selectCell($(this).data('cell'));
+    $('.cell').mouseup(function (e) {
+        if (e.which === 1) { //Left click
+            selectCell($(this));
+        }
+        else if (e.which === 3) { //Right click
+            flagCell($(this));
+        }
     });
 }
 
-function selectCell(id) {
+function selectCell($this) {
+    if (!$this.hasClass('unselected')) {
+        return;
+    }
+    var id = $this.data('cell');
     $.get('/Home/SelectCell?id=' + id, function (data) {
         console.log(data);
         updateCellClasses(data.Values);
-        if (data.State === 'MineSelected')
-            mineSelected();
+        if (data.State !== 'GameInProgress')
+            endGame();
     });
 }
 
-function mineSelected() {
+function endGame() {
     $('.cell').off();
-    $('#board-container').click(function () {
-        $(this).off();
-        $('.cell').attr('class', 'cell unselected');
-        bindMouseButtons();
+    $('#board-container').mouseup(function (e) {
+        if (e.which === 1) { //Left click
+            $(this).off();
+            preventContextMenu(); 
+            $('.cell').attr('class', 'cell unselected');
+            bindMouseButtons();
+        }
     });
 }
 
@@ -51,7 +66,8 @@ function flagCell($this) {
     if ($this.hasClass('unselected') || $this.hasClass('flag')) {
         $this.toggleClass('unselected flag');
         $.get('/Home/FlagCell?id=' + $this.data('cell'), function (data) {
-            console.log(data);
+            if (data === false)
+                console.log("Error flagging on server");
         });
     }
 }
