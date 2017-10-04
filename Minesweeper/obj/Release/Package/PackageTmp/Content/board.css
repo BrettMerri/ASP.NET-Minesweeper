@@ -1,0 +1,74 @@
+﻿body {
+    background-color: #EEEEEE;
+}
+#board-container {
+    background-color: #C0C0C0;
+    border-top: 3px solid #FFFFFF;
+    border-left: 3px solid #FFFFFF;
+    border-bottom: 3px solid #808080;
+    border-right: 3px solid #808080;
+    padding: 7px;
+    margin-top: 10px;
+    display: inline-block;
+}
+#board-header {
+    height:25px;
+}
+#board {
+    display: inline-block;
+    border-top: 3px solid #808080;
+    border-left: 3px solid #808080;
+    border-bottom: 3px solid #FFFFFF;
+    border-right: 3px solid #FFFFFF;
+}
+.cell {
+    background-color: #C0C0C0;
+    float: left;
+    position: relative;
+    width: 16px;
+    height: 16px;
+    background-image: url(../img/sprite.gif);
+    user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+.cell-row {
+    clear: both;
+}
+.time {
+    width: 13px;
+    height: 23px;
+}
+
+/*
+    Sprites
+*/
+.flag           {background-position: -16px -39px}
+.blank          {background-position: 0 -23px}
+.one            {background-position: -16px -23px}
+.two            {background-position: -32px -23px}
+.three          {background-position: -48px -23px}
+.four           {background-position: -64px -23px}
+.five           {background-position: -80px -23px}
+.six            {background-position: -96px -23px}
+.seven          {background-position: -112px -23px}
+.eight          {background-position: -128px -23px}
+.unselected     {background-position: 0 -39px}
+.mineflagged    {background-position: -16px -39px}
+.minedeath      {background-position: -32px -39px}
+.minemisflagged {background-position: -48px -39px}
+.mine           {background-position: -64px -39px}
+.time0          {background-position: 0 0}
+.time1          {background-position: -13px 0}
+.time2          {background-position: -26px 0}
+.time3          {background-position: -39px 0}
+.time4          {background-position: -52px 0}
+.time5          {background-position: -65px 0}
+.time6          {background-position: -78px 0}
+.time7          {background-position: -91px 0}
+.time8          {background-position: -104px 0}
+.time9          {background-position: -117px 0}
+.time           {background-position: -130px 0}
