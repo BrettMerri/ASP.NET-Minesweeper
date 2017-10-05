@@ -95,7 +95,6 @@
     }
 
     function endGame(state) {
-        console.log(state);
         $('.cell').off();
         if (state === 'MineSelected')
             $('#face').attr('class', 'facedead');

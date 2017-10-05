@@ -19,8 +19,8 @@ namespace Minesweeper.Models
 
         public Board()
         {
-            Horizontal = 9; 
-            Vertical = 9;
+            Horizontal = 15; 
+            Vertical = 15;
             Mines = 10;
             SafeCellsRemaining = Horizontal * Vertical - Mines;
             State = GameState.BlankGameBoard;
