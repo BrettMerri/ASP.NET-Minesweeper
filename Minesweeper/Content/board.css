@@ -1,13 +1,16 @@
 ﻿body {
     background-color: #EEEEEE;
 }
-#board-container, #board-header, #board, .cell-row, .cell, #time-container, #mine-container, .time, #face {
+#board-container, #difficulty-container, #board-header, #board, .cell-row, .cell, #time-container, #mine-container, .time, #face {
     user-drag: none;
     user-select: none;
     -moz-user-select: none;
     -webkit-user-drag: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+}
+#difficulty-container {
+    margin-top: 10px;
 }
 #board-container {
     background-color: #C0C0C0;

@@ -14,18 +14,50 @@ namespace Minesweeper.Models
         int mines;
         int safeCellsRemaining;
         GameState state;
+        GameDifficulty difficulty;
         DateTime startTime;
         Stopwatch timer;
 
-        public Board()
+        public Board() : this(GameDifficulty.Easy)
         {
-            Horizontal = 15; 
-            Vertical = 15;
-            Mines = 10;
+        }
+        public Board(GameDifficulty difficulty)
+        {
+            switch (difficulty)
+            {
+                case GameDifficulty.Hard:
+                    Horizontal = 16;
+                    Vertical = 30;
+                    Mines = 99;
+                    break;
+                case GameDifficulty.Medium:
+                    Horizontal = 16;
+                    Vertical = 16;
+                    Mines = 40;
+                    break;
+                case GameDifficulty.Easy:
+                default:
+                    Horizontal = 9;
+                    Vertical = 9;
+                    Mines = 10;
+                    break;
+            }
+            Difficulty = difficulty;
             SafeCellsRemaining = Horizontal * Vertical - Mines;
             State = GameState.BlankGameBoard;
             CreateEmptyCellArray();
         }
+        public Board(int horizontal, int vertical, int mines) // Custom board
+        {
+            Difficulty = GameDifficulty.Custom;
+            Horizontal = horizontal;
+            Vertical = vertical;
+            Mines = mines;
+            SafeCellsRemaining = Horizontal * Vertical - Mines;
+            State = GameState.BlankGameBoard;
+            CreateEmptyCellArray();
+        }
+
 
         public InitialJsonValue GetJsonBoard()
         {
@@ -51,7 +83,7 @@ namespace Minesweeper.Models
                         JsonCellValueList.Add(new JsonCellValue(currentCell.SurroundingMinesValue, currentCell.Id));
                 }
             }
-            return new InitialJsonValue(Horizontal, Vertical, JsonCellValueList.ToArray());
+            return new InitialJsonValue(Horizontal, Vertical, Difficulty.ToString(), JsonCellValueList.ToArray());
         }
 
         public JsonValue SelectCell(int id)
@@ -320,14 +352,29 @@ namespace Minesweeper.Models
             return surroundingMinesValue;
         }
 
+        public static void CreateBoardSession(Board currentBoard)
+        {
+            HttpContext.Current.Session["Board"] = currentBoard;
+        }
+
         public static Board Current
         {
             get
             {
-                var boardSession = HttpContext.Current.Session["Board"] as Board;
+                Board boardSession = HttpContext.Current.Session["Board"] as Board;
                 if (boardSession == null)
                 {
-                    boardSession = new Board();
+                    string difficultySession = HttpContext.Current.Session["Difficulty"] as string;
+                    if (difficultySession != null)
+                    {
+                        GameDifficulty difficulty = (GameDifficulty)Enum.Parse(typeof(GameDifficulty), difficultySession);
+                        boardSession = new Board(difficulty);
+                    }
+                    else
+                    {
+                        HttpContext.Current.Session["Difficulty"] = GameDifficulty.Easy.ToString();
+                        boardSession = new Board();
+                    }
                     HttpContext.Current.Session["Board"] = boardSession;
                 }
                 return boardSession;
@@ -342,5 +389,6 @@ namespace Minesweeper.Models
         public int SafeCellsRemaining { get => safeCellsRemaining; set => safeCellsRemaining = value; }
         public DateTime StartTime { get => startTime; set => startTime = value; }
         public Stopwatch Timer { get => timer; set => timer = value; }
+        public GameDifficulty Difficulty { get => difficulty; set => difficulty = value; }
     }
 }

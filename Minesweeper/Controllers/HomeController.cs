@@ -23,6 +23,17 @@ namespace Minesweeper.Controllers
             return Json(currentJsonBoard, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult ChangeDifficulty(string difficulty)
+        {
+            if (!Enum.TryParse(difficulty, true, out GameDifficulty difficultyResult))
+            {
+                return GetBoard();
+            }
+            HttpContext.Session.Remove("Board");
+            HttpContext.Session.Add("Difficulty", difficultyResult.ToString());
+            return GetBoard();
+        }
+
         [HttpGet]
         public JsonResult SelectCell(int id)
         {
@@ -30,7 +41,7 @@ namespace Minesweeper.Controllers
             JsonValue currentJsonValue = currentBoard.SelectCell(id);
             if (currentBoard.State == GameState.MineSelected ||
                 currentBoard.State == GameState.GameWon)
-                HttpContext.Session.Abandon();
+                HttpContext.Session.Remove("Board");
             return Json(currentJsonValue, JsonRequestBehavior.AllowGet);
         }
 
