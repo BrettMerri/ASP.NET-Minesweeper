@@ -23,15 +23,16 @@ namespace Minesweeper.Controllers
             return Json(currentJsonBoard, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
         public JsonResult ChangeDifficulty(string difficulty)
         {
             if (!Enum.TryParse(difficulty, true, out GameDifficulty difficultyResult))
             {
-                return GetBoard();
+                return Json(false, JsonRequestBehavior.AllowGet);
             }
             HttpContext.Session.Remove("Board");
             HttpContext.Session.Add("Difficulty", difficultyResult.ToString());
-            return GetBoard();
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]

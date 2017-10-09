@@ -49,13 +49,13 @@
 .cell-row {
     clear: both;
 }
-#time-container {
+#mine-container {
     display: inline-block;
     position: absolute;
     top: 4px;
     left: 5px;
 }
-#mine-container {
+#time-container {
     display: inline-block;
     position: absolute;
     top: 4px;
@@ -104,7 +104,7 @@
 .time9          {background-position: -117px 0}
 .time-          {background-position: -130px 0}
 .facesmile      {background-position: 0 -55px}
-.facepressed    {background-position: -26px -55px}
 .faceooh        {background-position: -52px -55px}
 .facedead       {background-position: -78px -55px}
 .facewin        {background-position: -104px -55px}
+.facepressed    {background-position: -26px -55px}

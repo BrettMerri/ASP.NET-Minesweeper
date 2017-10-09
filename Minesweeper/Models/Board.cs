@@ -26,8 +26,8 @@ namespace Minesweeper.Models
             switch (difficulty)
             {
                 case GameDifficulty.Hard:
-                    Horizontal = 16;
-                    Vertical = 30;
+                    Horizontal = 30;
+                    Vertical = 16;
                     Mines = 99;
                     break;
                 case GameDifficulty.Medium:
@@ -364,16 +364,17 @@ namespace Minesweeper.Models
                 Board boardSession = HttpContext.Current.Session["Board"] as Board;
                 if (boardSession == null)
                 {
-                    string difficultySession = HttpContext.Current.Session["Difficulty"] as string;
-                    if (difficultySession != null)
+                    string difficultySession = HttpContext.Current.Session["Difficulty"] as String;
+                    if (difficultySession == null)
                     {
-                        GameDifficulty difficulty = (GameDifficulty)Enum.Parse(typeof(GameDifficulty), difficultySession);
+                        GameDifficulty difficulty = GameDifficulty.Easy;
+                        HttpContext.Current.Session["Difficulty"] = difficulty.ToString();
                         boardSession = new Board(difficulty);
                     }
                     else
                     {
-                        HttpContext.Current.Session["Difficulty"] = GameDifficulty.Easy.ToString();
-                        boardSession = new Board();
+                        GameDifficulty difficulty = (GameDifficulty)Enum.Parse(typeof(GameDifficulty), difficultySession);
+                        boardSession = new Board(difficulty);
                     }
                     HttpContext.Current.Session["Board"] = boardSession;
                 }

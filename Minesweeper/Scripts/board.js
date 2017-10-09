@@ -2,7 +2,11 @@
     preventContextMenu();
 
     var mouseIsDown = false;
+    var timerRunning = false;
     var difficulty;
+    var seconds = 0;
+    var intervalHandle;
+    startGame();
 
     $(document).mousedown(function (e) {
         if (e.which === 1) { //Left click
@@ -14,27 +18,64 @@
         }    
     });
 
-    $.get('/Home/GetBoard', function (data) {
-        console.log(data);
-        difficulty = data.Difficulty.toLowerCase();
-        disableDifficultyButton(difficulty);
-        writeEntireBoard(data);
-        bindMouseButtons();
-    });
+    $('.difficultyButton').click(changeDifficulty);
 
-    $('.difficultyButton').click(function () {
+    function changeDifficulty() {
         var oldDifficulty = difficulty;
         difficulty = $(this).data('difficulty');
         if (oldDifficulty === difficulty)
             return
         $.get('/Home/ChangeDifficulty?difficulty=' + difficulty, function (data) {
-            console.log(data);
+            if (data === false)
+                console.log("Error changing difficulties");
+            endTimer()
+            setTime(); //Resets time to 000
+            startGame();
+        });
+    }
+
+    function startGame() {
+
+        $.get('/Home/GetBoard', function (data) {
             difficulty = data.Difficulty.toLowerCase();
             disableDifficultyButton(difficulty);
             writeEntireBoard(data);
             bindMouseButtons();
         });
-    });
+
+    }
+
+    function startTimer() {
+        intervalHandle = setInterval(incrementSeconds, 1000);
+        timerRunning = true;
+    }
+
+    function endTimer() {
+        clearInterval(intervalHandle);
+        timerRunning = false;
+        seconds = 0;
+    }
+
+    function incrementSeconds() {
+        if (seconds >= 999)
+            return;
+        seconds++;
+        setTime();
+    }
+
+    function setTime() {
+        var seperateDigits = seconds.toString().split("").reverse();
+        for (i = 0; i < seperateDigits.length; i++) {
+            var $element;
+            if (i === 0)
+                $element = $('#ones');
+            else if (i === 1)
+                $element = $('#tens');
+            else
+                $element = $('#hundreds');
+            $element.attr('class', 'time time' + seperateDigits[i]);
+        }
+    }
 
     function disableDifficultyButton(difficulty) {
         $('.difficultyButton[data-difficulty="' + difficulty + '"]').prop('disabled', true);
@@ -49,16 +90,18 @@
 
     function writeEntireBoard(data) {
         $('#board').empty();
-        var appendString = '<div class="cell-row">';
+        var boardHTML = [],
+            appendString = '<div class="cell-row">';
         for (var i = 0; i < data.Values.length; i++) {
             var cellValue = data.Values[i].Value;
             var className = getClassName(cellValue);
             appendString += '<div class="cell ' + className + '" data-cell="' + i + '"></div>';
             if (i % data.Width === data.Width - 1) {
-                $('#board').append(appendString + '</div>');
+                boardHTML.push(appendString + '</div>');
                 appendString = '<div class="cell-row">';
             }
         }
+        $('#board').html(boardHTML.join(''));
     }
 
     function bindMouseButtons() {
@@ -106,12 +149,14 @@
         }
         var id = $this.data('cell');
         $.get('/Home/SelectCell?id=' + id, function (data) {
-            console.log(data);
             updateCellClasses(data.Values);
             if (data.State !== 'GameInProgress') {
+                endTimer();
                 endGame(data.State);
             }
             else {
+                if (timerRunning === false)
+                    startTimer();
                 $('#face').attr('class', 'facesmile');
             }
         });
@@ -123,13 +168,12 @@
             $('#face').attr('class', 'facedead');
         else
             $('#face').attr('class', 'facewin');
-        $('#board-container').mouseup(function (e) {
+        $('#face').mouseup(function (e) {
             if (e.which === 1) { //Left click
-                $('.cell').attr('class', 'cell unselected');
-                $('#face').attr('class', 'facesmile');
                 $(this).off();
-                preventContextMenu(); //Because $(this).off() unbinds contextmenu so we gotta rebind it
-                bindMouseButtons(); //Because $('.cell').off() unbinds cells
+                setTime(); //Resets time to 000
+                $('#face').attr('class', 'facesmile');
+                startGame();
             }
         });
     }
@@ -155,20 +199,6 @@
 
     function getClassName(cellValue) {
         switch (cellValue) {
-            case 'Unselected':
-                return 'unselected';
-            case 'Flag':
-                return 'flag';
-            case 'MineFlagged':
-                return 'mineflagged';
-            case 'MineMisFlagged':
-                return 'minemisflagged';
-            case 'Blank':
-                return 'blank';
-            case 'Mine':
-                return 'mine';
-            case 'MineDeath':
-                return 'minedeath';
             case '1':
                 return 'selected one';
             case '2':
@@ -186,7 +216,7 @@
             case '8':
                 return 'selected eight';
             default:
-                return '';
+                return cellValue.toLowerCase();
         }
     }
 });

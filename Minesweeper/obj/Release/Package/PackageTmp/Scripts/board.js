@@ -2,6 +2,7 @@
     preventContextMenu();
 
     var mouseIsDown = false;
+    var difficulty;
 
     $(document).mousedown(function (e) {
         if (e.which === 1) { //Left click
@@ -15,9 +16,30 @@
 
     $.get('/Home/GetBoard', function (data) {
         console.log(data);
+        difficulty = data.Difficulty.toLowerCase();
+        disableDifficultyButton(difficulty);
         writeEntireBoard(data);
         bindMouseButtons();
     });
+
+    $('.difficultyButton').click(function () {
+        var oldDifficulty = difficulty;
+        difficulty = $(this).data('difficulty');
+        if (oldDifficulty === difficulty)
+            return
+        $.get('/Home/ChangeDifficulty?difficulty=' + difficulty, function (data) {
+            console.log(data);
+            difficulty = data.Difficulty.toLowerCase();
+            disableDifficultyButton(difficulty);
+            writeEntireBoard(data);
+            bindMouseButtons();
+        });
+    });
+
+    function disableDifficultyButton(difficulty) {
+        $('.difficultyButton[data-difficulty="' + difficulty + '"]').prop('disabled', true);
+        $('.difficultyButton').not('[data-difficulty="' + difficulty + '"]').prop('disabled', false);
+    }
 
     function preventContextMenu() {
         $('#board-container').on('contextmenu', function (e) { //Prevent context menu from popping up on right click
@@ -26,6 +48,7 @@
     }
 
     function writeEntireBoard(data) {
+        $('#board').empty();
         var appendString = '<div class="cell-row">';
         for (var i = 0; i < data.Values.length; i++) {
             var cellValue = data.Values[i].Value;
